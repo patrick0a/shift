@@ -1,0 +1,290 @@
+@import 'tailwindcss';
+
+/* Explicit scan root — don't rely on CWD-based auto-detection. */
+@source "../**/*.{ts,tsx}";
+
+/* --------------------------------------------------------------------------
+   Design tokens — "Vibrant Neon Fusion" on a bright, clean canvas
+   -------------------------------------------------------------------------- */
+@theme {
+  --color-canvas: #f5f7ff;
+  --color-ink: #191536;
+  --color-ink-soft: #3b3a63;
+  --color-muted: #6a719b;
+
+  /* Red team */
+  --color-flame: #f43f5e;
+  --color-flame-soft: #fb7185;
+  --color-flame-mist: #ffe6ec;
+
+  /* Blue team */
+  --color-aqua: #0ea5e9;
+  --color-aqua-soft: #38bdf8;
+  --color-aqua-mist: #e0f4fe;
+
+  /* The Shift */
+  --color-magic: #a855f7;
+  --color-magic-soft: #d946ef;
+  --color-magic-mist: #f8e9ff;
+
+  /* Bystander */
+  --color-gold: #f59e0b;
+  --color-gold-soft: #fbbf24;
+  --color-gold-mist: #fef4d8;
+
+  /* Assassin */
+  --color-noir: #221f45;
+
+  --font-display: 'Cairo', 'Tajawal', 'Segoe UI', system-ui, sans-serif;
+  --font-sans: 'Tajawal', 'Cairo', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+
+  --animate-shift-flash: shift-flash 900ms ease-out;
+  --animate-rise: rise 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-pulse-ring: pulse-ring 1.8s ease-out infinite;
+  --animate-scan: scan 2.4s linear infinite;
+  --animate-drift: drift 22s ease-in-out infinite alternate;
+  --animate-sheen: sheen 7s ease-in-out infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    background: var(--color-canvas);
+    /* Respect notches / home indicator on installed mobile PWAs. */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+      env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: var(--color-canvas);
+    min-height: 100dvh;
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: 0;
+  }
+
+  /* Arabic reads better with a touch more leading than the Latin default. */
+  p, li, label, button, input {
+    line-height: 1.75;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-magic) 30%, transparent);
+  }
+
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #c9cfea transparent;
+  }
+  .scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scroll-thin::-webkit-scrollbar-thumb {
+    background: #c9cfea;
+    border-radius: 99px;
+  }
+  .scroll-thin::-webkit-scrollbar-track { background: transparent; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Ambience — bright aurora wash instead of a dark void
+   -------------------------------------------------------------------------- */
+@utility backdrop-aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(58rem 40rem at 8% -12%, rgba(244, 63, 94, 0.22), transparent 62%),
+    radial-gradient(54rem 38rem at 94% 2%, rgba(14, 165, 233, 0.26), transparent 62%),
+    radial-gradient(46rem 44rem at 50% 112%, rgba(168, 85, 247, 0.24), transparent 64%),
+    radial-gradient(40rem 30rem at 78% 78%, rgba(217, 70, 239, 0.16), transparent 66%),
+    linear-gradient(180deg, #fdfdff 0%, #eef2ff 55%, #e9edff 100%);
+}
+
+@utility grid-veil {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+  background-image:
+    linear-gradient(rgba(25, 21, 54, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(25, 21, 54, 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 62% at 50% 38%, #000 25%, transparent 100%);
+}
+
+/* --------------------------------------------------------------------------
+   Glass surfaces (light)
+   -------------------------------------------------------------------------- */
+@utility glass {
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.86),
+    rgba(255, 255, 255, 0.62)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(18px) saturate(165%);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.95) inset,
+    0 16px 38px -26px rgba(41, 32, 96, 0.5);
+}
+
+@utility glass-deep {
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(255, 255, 255, 0.82)
+  );
+  border: 1px solid rgba(255, 255, 255, 1);
+  backdrop-filter: blur(26px) saturate(150%);
+  -webkit-backdrop-filter: blur(26px) saturate(150%);
+  box-shadow: 0 22px 54px -30px rgba(41, 32, 96, 0.55);
+}
+
+/* --------------------------------------------------------------------------
+   Colour glows — saturated shadows read as "neon" on a light canvas
+   -------------------------------------------------------------------------- */
+@utility glow-flame {
+  box-shadow:
+    0 0 0 1px rgba(244, 63, 94, 0.4),
+    0 10px 30px -10px rgba(244, 63, 94, 0.65);
+}
+
+@utility glow-aqua {
+  box-shadow:
+    0 0 0 1px rgba(14, 165, 233, 0.4),
+    0 10px 30px -10px rgba(14, 165, 233, 0.65);
+}
+
+@utility glow-magic {
+  box-shadow:
+    0 0 0 1px rgba(168, 85, 247, 0.45),
+    0 12px 34px -10px rgba(168, 85, 247, 0.7);
+}
+
+@utility text-glow-flame {
+  text-shadow: 0 2px 18px rgba(244, 63, 94, 0.42);
+}
+
+@utility text-glow-aqua {
+  text-shadow: 0 2px 18px rgba(14, 165, 233, 0.42);
+}
+
+/* Vivid gradient text used for the wordmark. */
+@utility text-fusion {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-flame),
+    var(--color-magic) 48%,
+    var(--color-aqua)
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: var(--animate-sheen);
+}
+
+/* --------------------------------------------------------------------------
+   Card flip
+   -------------------------------------------------------------------------- */
+@utility flip-scene {
+  perspective: 1200px;
+}
+
+@utility flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 560ms cubic-bezier(0.34, 1.32, 0.48, 1);
+}
+
+@utility flip-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Keyframes
+   -------------------------------------------------------------------------- */
+@keyframes shift-flash {
+  0%   { opacity: 0; }
+  14%  { opacity: 1; }
+  62%  { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.6); }
+  70%  { box-shadow: 0 0 0 14px rgba(168, 85, 247, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); }
+}
+
+@keyframes scan {
+  from { transform: translateY(-110%); }
+  to   { transform: translateY(1100%); }
+}
+
+@keyframes drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(0, -16px, 0) scale(1.04); }
+}
+
+@keyframes sheen {
+  0%, 100% { background-position: 0% center; }
+  50%      { background-position: 100% center; }
+}
+
+@keyframes shake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-7px); }
+  40%, 60% { transform: translateX(7px); }
+}
+
+@keyframes glitch-text {
+  0%, 100% { clip-path: inset(0 0 0 0); transform: none; }
+  22% { clip-path: inset(18% 0 42% 0); transform: translateX(-4px); }
+  44% { clip-path: inset(62% 0 8% 0);  transform: translateX(5px); }
+  66% { clip-path: inset(34% 0 52% 0); transform: translateX(-3px); }
+}
+
+@utility fx-shake {
+  animation: shake 620ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@utility fx-glitch {
+  animation: glitch-text 700ms steps(2, end) 2;
+}
